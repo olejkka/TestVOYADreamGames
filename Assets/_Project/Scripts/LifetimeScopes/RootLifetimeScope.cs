@@ -1,4 +1,5 @@
 using _Project.Scripts.Configs;
+using _Project.Scripts.Generators;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -15,6 +16,8 @@ namespace _Project.Scripts.LifetimeScopes
         {
             builder.RegisterInstance(matchConfig);
             builder.RegisterInstance(shipLengthConfig);
+            builder.Register<FieldGenerator>(Lifetime.Singleton);
+            builder.Register<ShipPositionGenerator>(Lifetime.Singleton);
         }
     }
 }

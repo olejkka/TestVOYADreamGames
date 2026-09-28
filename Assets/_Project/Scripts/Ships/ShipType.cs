@@ -1,4 +1,4 @@
-namespace _Project.Scripts.Ship
+namespace _Project.Scripts.Ships
 {
     public enum ShipType
     {

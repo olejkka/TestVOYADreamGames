@@ -1,4 +1,4 @@
-using _Project.Scripts.Ship;
+using _Project.Scripts.Ships;
 using UnityEngine;
 
 namespace _Project.Scripts.Configs
