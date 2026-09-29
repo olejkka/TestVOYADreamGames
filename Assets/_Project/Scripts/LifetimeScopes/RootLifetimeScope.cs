@@ -6,6 +6,7 @@ using _Project.Scripts.NetworkLayer.Server;
 using _Project.Scripts.NetworkLayer.Transport;
 using _Project.Scripts.UI;
 using _Project.Scripts.UI.Cell;
+using _Project.Scripts.UI.PlayersWindows;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;

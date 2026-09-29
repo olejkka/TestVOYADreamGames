@@ -6,17 +6,28 @@ namespace _Project.Scripts.NetworkLayer.Server
     public class GameServer
     {
         private readonly IServerTransport _transport;
+        private readonly InProcessHub _hub;
         private readonly Match _match;
         
         private readonly bool[] _seated = new bool[2];
 
 
-        public GameServer(IServerTransport transport, Match match)
+        public GameServer(IServerTransport transport, InProcessHub hub, Match match)
         {
             _transport = transport;
+            _hub = hub;
             _match = match;
             
             _transport.Received += OnReceived;
+        }
+
+        public void Tick(long nowMs)
+        {
+            if (!_match.ExpireTurn(nowMs))
+                return;
+
+            SendSnapshot(0);
+            SendSnapshot(1);
         }
 
         private void OnReceived(int connectionId, byte[] bytes)
@@ -37,6 +48,7 @@ namespace _Project.Scripts.NetworkLayer.Server
             if (!_match.TryShoot(connectionId, cell))
                 return;
 
+            _match.StartTurn(_hub.NowMs);
             SendSnapshot(0);
             SendSnapshot(1);
         }
@@ -53,6 +65,7 @@ namespace _Project.Scripts.NetworkLayer.Server
 
             if (!wasReady)
             {
+                _match.StartTurn(_hub.NowMs);
                 SendSnapshot(0);
                 SendSnapshot(1);
                 

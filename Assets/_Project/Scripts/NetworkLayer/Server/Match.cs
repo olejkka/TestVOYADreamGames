@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using _Project.Scripts;
+using _Project.Scripts.Configs;
 using _Project.Scripts.Generators;
 using _Project.Scripts.NetworkLayer.Protocol;
 using _Project.Scripts.Ships;
@@ -13,19 +14,22 @@ namespace _Project.Scripts.NetworkLayer.Server
         private readonly ShipPositionGenerator _positionGenerator;
 
         private readonly Random _random = new Random();
+        private readonly int _turnTimeoutSec;
 
         private Field[] _fields;
         private Ship[][] _ships;
         private List<ShotRecord>[] _shots;
         private int _turn;
         private int _winner = SnapshotMessage.NoWinner;
+        private long _turnDeadlineMs = SnapshotMessage.NoDeadline;
         private bool _placed;
 
 
-        public Match(FieldGenerator fieldGenerator, ShipPositionGenerator positionGenerator)
+        public Match(FieldGenerator fieldGenerator, ShipPositionGenerator positionGenerator, MatchConfig matchConfig)
         {
             _fieldGenerator = fieldGenerator;
             _positionGenerator = positionGenerator;
+            _turnTimeoutSec = matchConfig.turnTimeoutSec;
         }
 
         public void Place()
@@ -86,6 +90,28 @@ namespace _Project.Scripts.NetworkLayer.Server
             return true;
         }
 
+        public void StartTurn(long nowMs)
+        {
+            if (_winner != SnapshotMessage.NoWinner || _turnTimeoutSec == 0)
+            {
+                _turnDeadlineMs = SnapshotMessage.NoDeadline;
+                return;
+            }
+
+            _turnDeadlineMs = nowMs + _turnTimeoutSec * 1000L;
+        }
+
+        public bool ExpireTurn(long nowMs)
+        {
+            if (_turnDeadlineMs < 0 || nowMs < _turnDeadlineMs)
+                return false;
+
+            _turn = 1 - _turn;
+            StartTurn(nowMs);
+            
+            return true;
+        }
+
         public SnapshotMessage SnapshotFor(int playerId)
         {
             Ship[] ships = _ships[playerId];
@@ -119,6 +145,7 @@ namespace _Project.Scripts.NetworkLayer.Server
                 height = _fields[playerId].Height,
                 turn = _turn,
                 winner = _winner,
+                turnDeadlineMs = _turnDeadlineMs,
                 ships = placements,
                 shots = shots,
                 misses = MissesOn(playerId)

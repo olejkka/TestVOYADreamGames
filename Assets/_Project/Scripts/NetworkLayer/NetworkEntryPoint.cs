@@ -37,6 +37,7 @@ namespace _Project.Scripts.NetworkLayer
         {
             long nowMs = (long)(Time.unscaledTime * 1000f);
             _hub.Tick(nowMs);
+            _server.Tick(nowMs);
         }
     }
 }

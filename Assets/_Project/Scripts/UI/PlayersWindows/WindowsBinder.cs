@@ -3,7 +3,7 @@ using _Project.Scripts.UI.Cell;
 using UnityEngine;
 using VContainer;
 
-namespace _Project.Scripts.UI
+namespace _Project.Scripts.UI.PlayersWindows
 {
     public class WindowsBinder : MonoBehaviour
     {
