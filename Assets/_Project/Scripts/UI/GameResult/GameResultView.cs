@@ -1,13 +1,13 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
-namespace _Project.Scripts.UI
+namespace _Project.Scripts.UI.GameResult
 {
     public class GameResultView : MonoBehaviour
     {
         [SerializeField] private TMP_Text text;
 
+        
         public void Show(string result)
         {
             text.text = result;

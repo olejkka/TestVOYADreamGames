@@ -9,11 +9,13 @@ namespace _Project.Scripts.NetworkLayer.Client
         private readonly IClientTransport _transport;
         private readonly int _playerId;
         private bool _waiting;
+        private bool _connected;
 
         public int PlayerId => _playerId;
         public SnapshotMessage Snapshot { get; private set; }
         public event Action<SnapshotMessage> SnapshotReceived;
         public event Action OutOfTurn;
+        public event Action Disconnected;
         
 
         public ClientSession(IClientTransport transport, int playerId)
@@ -21,31 +23,48 @@ namespace _Project.Scripts.NetworkLayer.Client
             _transport = transport;
             _playerId = playerId;
             _transport.Received += OnReceived;
+            _transport.Disconnected += OnDisconnected;
         }
 
         public void Start()
         {
+            Connect();
+        }
+
+        public void Connect()
+        {
             _transport.Connect();
+            _connected = true;
             _transport.Send(MessageCodec.EncodeHello());
         }
 
-        public void Shoot(int cell)
+        public void Disconnect()
         {
+            _transport.Disconnect();
+        }
+
+        public bool Shoot(int cell)
+        {
+            if (!_connected)
+                return false;
+
             if (Snapshot.winner != SnapshotMessage.NoWinner)
-                return;
+                return false;
 
             if (Snapshot.turn != _playerId)
             {
                 OutOfTurn?.Invoke();
                 
-                return;
+                return false;
             }
 
             if (_waiting)
-                return;
+                return false;
 
             _waiting = true;
             _transport.Send(MessageCodec.EncodeShoot(cell));
+            
+            return true;
         }
 
         private void OnReceived(byte[] bytes)
@@ -57,6 +76,13 @@ namespace _Project.Scripts.NetworkLayer.Client
             _waiting = false;
             
             SnapshotReceived?.Invoke(Snapshot);
+        }
+
+        private void OnDisconnected()
+        {
+            _connected = false;
+            _waiting = false;
+            Disconnected?.Invoke();
         }
     }
 }

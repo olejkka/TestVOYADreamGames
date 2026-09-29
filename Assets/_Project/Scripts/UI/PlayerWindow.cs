@@ -3,6 +3,8 @@ using _Project.Scripts;
 using _Project.Scripts.NetworkLayer.Client;
 using _Project.Scripts.NetworkLayer.Protocol;
 using _Project.Scripts.UI.Cell;
+using _Project.Scripts.UI.GameResult;
+using _Project.Scripts.UI.NetworkButtons;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,10 +15,14 @@ namespace _Project.Scripts.UI
         [SerializeField] private GridLayoutGroup alliesGrid;
         [SerializeField] private GridLayoutGroup enemyGrid;
         [SerializeField] private GameResultView resultView;
+        [SerializeField] private DisconnectView disconnectView;
+        [SerializeField] private ConnectView connectView;
 
         private ClientSession _session;
         private CellInstantiator _cells;
         private GameResultPresenter _result;
+        private DisconnectPresenter _disconnect;
+        private ConnectPresenter _connect;
         private CellPresenter[] _allies;
         private CellPresenter[] _enemy;
         private bool _built;
@@ -27,9 +33,21 @@ namespace _Project.Scripts.UI
             _session = session;
             _cells = cells;
             _result = new GameResultPresenter(resultView, session);
+            _disconnect = new DisconnectPresenter(disconnectView, session);
+            _connect = new ConnectPresenter(connectView, session);
             _session.SnapshotReceived += OnSnapshot;
             if (_session.Snapshot != null)
                 OnSnapshot(_session.Snapshot);
+        }
+
+        public void Connect()
+        {
+            _session.Connect();
+        }
+
+        public void Disconnect()
+        {
+            _session.Disconnect();
         }
 
         private void OnSnapshot(SnapshotMessage snapshot)
@@ -49,7 +67,7 @@ namespace _Project.Scripts.UI
             Show(_enemy, enemy);
         }
 
-        private CellPresenter[] Create(GridLayoutGroup grid, int width, CellType[] types, Action<int> onShot)
+        private CellPresenter[] Create(GridLayoutGroup grid, int width, CellType[] types, Func<int, bool> onShot)
         {
             grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
             grid.constraintCount = width;

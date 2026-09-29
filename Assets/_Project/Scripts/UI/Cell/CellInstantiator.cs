@@ -18,7 +18,7 @@ namespace _Project.Scripts.UI.Cell
             _colors = colors;
         }
 
-        public CellPresenter Create(RectTransform parent, int index, CellType type, Action<int> onShot)
+        public CellPresenter Create(RectTransform parent, int index, CellType type, Func<int, bool> onShot)
         {
             CellView view = Object.Instantiate(cellPrefab, parent);
 

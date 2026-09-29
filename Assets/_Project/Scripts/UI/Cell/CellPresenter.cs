@@ -8,12 +8,12 @@ namespace _Project.Scripts.UI.Cell
         private readonly CellView _view;
         private readonly CellColorConfig _colors;
         private readonly int _index;
-        private readonly Action<int> _onShot;
+        private readonly Func<int, bool> _onShot;
         
         private CellType _type;
 
         
-        public CellPresenter(CellView view, CellColorConfig colors, int index, Action<int> onShot)
+        public CellPresenter(CellView view, CellColorConfig colors, int index, Func<int, bool> onShot)
         {
             _view = view;
             _colors = colors;
@@ -34,7 +34,10 @@ namespace _Project.Scripts.UI.Cell
             if (_onShot == null || _type != CellType.Unknown)
                 return;
 
-            _onShot(_index);
+            if (!_onShot(_index))
+                return;
+
+            Show(CellType.Sent);
         }
     }
 }

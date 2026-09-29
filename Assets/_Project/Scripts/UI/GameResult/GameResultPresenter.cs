@@ -1,13 +1,14 @@
 using _Project.Scripts.NetworkLayer.Client;
 using _Project.Scripts.NetworkLayer.Protocol;
 
-namespace _Project.Scripts.UI
+namespace _Project.Scripts.UI.GameResult
 {
     public class GameResultPresenter
     {
         private readonly GameResultView _view;
         private readonly ClientSession _session;
 
+        
         public GameResultPresenter(GameResultView view, ClientSession session)
         {
             _view = view;

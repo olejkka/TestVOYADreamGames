@@ -9,6 +9,7 @@ namespace _Project.Scripts.UI.Cell
         Ship = 3,
         Hit = 4,
         Sunk = 5,
-        Miss = 6
+        Miss = 6,
+        Sent = 7
     }
 }
