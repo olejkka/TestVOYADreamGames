@@ -27,5 +27,6 @@ namespace _Project.Scripts.NetworkLayer.Protocol
         public int turn;
         public ShipPlacement[] ships;
         public ShotPlacement[] shots;
+        public int[] misses;
     }
 }

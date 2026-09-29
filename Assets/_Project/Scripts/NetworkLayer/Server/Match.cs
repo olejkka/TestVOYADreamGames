@@ -114,8 +114,35 @@ namespace _Project.Scripts.NetworkLayer.Server
                 height = _fields[playerId].Height,
                 turn = _turn,
                 ships = placements,
-                shots = shots
+                shots = shots,
+                misses = MissesOn(playerId)
             };
+        }
+
+        private int[] MissesOn(int playerId)
+        {
+            List<ShotRecord> incoming = _shots[1 - playerId];
+            int count = 0;
+
+            for (int i = 0; i < incoming.Count; i++)
+            {
+                if (incoming[i].Result == ShotResult.Miss)
+                    count++;
+            }
+
+            var misses = new int[count];
+            int n = 0;
+
+            for (int i = 0; i < incoming.Count; i++)
+            {
+                if (incoming[i].Result != ShotResult.Miss)
+                    continue;
+
+                misses[n] = incoming[i].Cell;
+                n++;
+            }
+
+            return misses;
         }
 
         private static Ship ShipAt(Ship[] ships, int cell)

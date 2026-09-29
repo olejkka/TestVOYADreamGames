@@ -8,6 +8,7 @@ namespace _Project.Scripts.UI.Cell
         Water = 2,
         Ship = 3,
         Hit = 4,
-        Sunk = 5
+        Sunk = 5,
+        Miss = 6
     }
 }

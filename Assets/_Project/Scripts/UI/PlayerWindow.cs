@@ -74,6 +74,11 @@ namespace _Project.Scripts.UI
             for (int i = 0; i < cells.Length; i++)
                 cells[i] = CellType.Water;
 
+            int[] misses = snapshot.misses;
+
+            for (int i = 0; i < misses.Length; i++)
+                cells[misses[i]] = CellType.Miss;
+
             ShipPlacement[] ships = snapshot.ships;
             
             for (int s = 0; s < ships.Length; s++)
