@@ -46,6 +46,16 @@ namespace _Project.Scripts.UI.PlayersWindows
                 OnSnapshot(_session.Snapshot);
         }
 
+        private void OnDestroy()
+        {
+            if (_session == null)
+                return;
+
+            _session.SnapshotReceived -= OnSnapshot;
+            _result.Dispose();
+            _turnTimer.Dispose();
+        }
+
         public void Connect()
         {
             _session.Connect();

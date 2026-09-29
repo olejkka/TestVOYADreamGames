@@ -28,5 +28,10 @@ namespace _Project.Scripts.UI.GameResult
             string result = snapshot.winner == _session.PlayerId ? "Winner" : "Loser";
             _view.Show(result);
         }
+
+        public void Dispose()
+        {
+            _session.SnapshotReceived -= OnSnapshot;
+        }
     }
 }

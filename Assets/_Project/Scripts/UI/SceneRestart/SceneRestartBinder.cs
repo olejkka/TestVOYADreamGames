@@ -1,4 +1,7 @@
+using _Project.Scripts.NetworkLayer.Transport;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using VContainer;
 
 namespace _Project.Scripts.UI.SceneRestart
 {
@@ -8,10 +11,10 @@ namespace _Project.Scripts.UI.SceneRestart
 
         private SceneRestartPresenter _presenter;
 
-        
-        private void Awake()
+        [Inject]
+        public void Construct(InProcessHub hub)
         {
-            _presenter = new SceneRestartPresenter(view);
+            _presenter = new SceneRestartPresenter(view, hub);
         }
     }
 }

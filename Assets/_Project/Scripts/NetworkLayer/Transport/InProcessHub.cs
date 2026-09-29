@@ -8,6 +8,7 @@ namespace _Project.Scripts.NetworkLayer.Transport
         private readonly Connection[] _connections;
         
         private long _nowMs;
+        private bool _disposed;
         internal long NowMs => _nowMs;
 
         public event Action<int, byte[]> Received;
@@ -31,11 +32,17 @@ namespace _Project.Scripts.NetworkLayer.Transport
 
         public void Send(int connectionId, byte[] bytes)
         {
+            if (_disposed)
+                return;
+
             _connections[connectionId].EnqueueToClient(bytes, _nowMs);
         }
 
         public void Tick(long nowMs)
         {
+            if (_disposed)
+                return;
+
             _nowMs = nowMs;
             
             for (int i = 0; i < _connections.Length; i++)
@@ -44,6 +51,10 @@ namespace _Project.Scripts.NetworkLayer.Transport
 
         public void Dispose()
         {
+            if (_disposed)
+                return;
+
+            _disposed = true;
             Received = null;
             Connected = null;
             Disconnected = null;

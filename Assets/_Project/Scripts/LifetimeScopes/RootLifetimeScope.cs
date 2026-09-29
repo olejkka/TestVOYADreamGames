@@ -7,6 +7,7 @@ using _Project.Scripts.NetworkLayer.Transport;
 using _Project.Scripts.UI;
 using _Project.Scripts.UI.Cell;
 using _Project.Scripts.UI.PlayersWindows;
+using _Project.Scripts.UI.SceneRestart;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -44,6 +45,7 @@ namespace _Project.Scripts.LifetimeScopes
             builder.RegisterInstance(playerWindow0).Keyed(0);
             builder.RegisterInstance(playerWindow1).Keyed(1);
             builder.RegisterComponentInHierarchy<WindowsBinder>();
+            builder.RegisterComponentInHierarchy<SceneRestartBinder>();
         }
         
         private void RegisterGenerators(IContainerBuilder builder)

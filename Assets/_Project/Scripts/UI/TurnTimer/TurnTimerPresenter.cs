@@ -79,5 +79,10 @@ namespace _Project.Scripts.UI.TurnTimer
             _shown = seconds;
             _view.SetText(seconds.ToString());
         }
+
+        public void Dispose()
+        {
+            _session.SnapshotReceived -= OnSnapshot;
+        }
     }
 }
