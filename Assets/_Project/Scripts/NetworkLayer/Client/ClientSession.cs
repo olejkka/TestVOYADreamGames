@@ -1,12 +1,15 @@
 using System;
+using _Project.Scripts.Configs;
 using _Project.Scripts.NetworkLayer.Protocol;
 using _Project.Scripts.NetworkLayer.Transport;
+using UnityEngine;
 
 namespace _Project.Scripts.NetworkLayer.Client
 {
     public class ClientSession
     {
         private readonly IClientTransport _transport;
+        private readonly MatchConfig _matchConfig;
         private readonly int _playerId;
         private bool _waiting;
         private bool _connected;
@@ -18,10 +21,11 @@ namespace _Project.Scripts.NetworkLayer.Client
         public event Action Disconnected;
         
 
-        public ClientSession(IClientTransport transport, int playerId)
+        public ClientSession(IClientTransport transport, int playerId, MatchConfig matchConfig)
         {
             _transport = transport;
             _playerId = playerId;
+            _matchConfig = matchConfig;
             _transport.Received += OnReceived;
             _transport.Disconnected += OnDisconnected;
         }
@@ -36,6 +40,7 @@ namespace _Project.Scripts.NetworkLayer.Client
             _transport.Connect();
             _connected = true;
             _transport.Send(MessageCodec.EncodeHello());
+            Log("sent Hello");
         }
 
         public void Disconnect()
@@ -63,6 +68,7 @@ namespace _Project.Scripts.NetworkLayer.Client
 
             _waiting = true;
             _transport.Send(MessageCodec.EncodeShoot(cell));
+            Log("sent Shoot " + cell);
             
             return true;
         }
@@ -74,6 +80,7 @@ namespace _Project.Scripts.NetworkLayer.Client
 
             Snapshot = MessageCodec.ReadSnapshot(bytes);
             _waiting = false;
+            Log("received Snapshot turn " + Snapshot.turn + " winner " + Snapshot.winner);
             
             SnapshotReceived?.Invoke(Snapshot);
         }
@@ -83,6 +90,14 @@ namespace _Project.Scripts.NetworkLayer.Client
             _connected = false;
             _waiting = false;
             Disconnected?.Invoke();
+        }
+
+        private void Log(string message)
+        {
+            if (!_matchConfig.logEnabled)
+                return;
+
+            Debug.Log("Player " + _playerId + " " + message);
         }
     }
 }

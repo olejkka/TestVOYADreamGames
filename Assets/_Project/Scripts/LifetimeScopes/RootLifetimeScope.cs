@@ -65,9 +65,9 @@ namespace _Project.Scripts.LifetimeScopes
             builder.Register<GameServer>(Lifetime.Singleton);
             
             builder.Register<ClientSession>(resolver =>
-                new ClientSession(resolver.Resolve<IClientTransport>(0), 0), Lifetime.Singleton).Keyed(0);
+                new ClientSession(resolver.Resolve<IClientTransport>(0), 0, resolver.Resolve<MatchConfig>()), Lifetime.Singleton).Keyed(0);
             builder.Register<ClientSession>(resolver =>
-                new ClientSession(resolver.Resolve<IClientTransport>(1), 1), Lifetime.Singleton).Keyed(1);
+                new ClientSession(resolver.Resolve<IClientTransport>(1), 1, resolver.Resolve<MatchConfig>()), Lifetime.Singleton).Keyed(1);
             
             builder.RegisterEntryPoint<NetworkEntryPoint>();
         }
