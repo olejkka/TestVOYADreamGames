@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
+using _Project.Scripts.Configs;
 
 namespace _Project.Scripts.NetworkLayer.Transport
 {
-    public sealed class Connection : IClientTransport
+    public class Connection : IClientTransport
     {
         private readonly InProcessHub _hub;
+        private readonly MatchConfig _matchConfig;
         private readonly int _id;
+        private readonly Random _random = new Random();
         
         private readonly Queue<Queued> _toServer = new Queue<Queued>();
         private readonly Queue<Queued> _toClient = new Queue<Queued>();
@@ -19,11 +22,12 @@ namespace _Project.Scripts.NetworkLayer.Transport
         public event Action Disconnected;
 
         
-        public Connection(InProcessHub hub, int id, int latency)
+        public Connection(InProcessHub hub, int id, int latency, MatchConfig matchConfig)
         {
             _hub = hub;
             _id = id;
             Latency = latency;
+            _matchConfig = matchConfig;
         }
 
         public void Send(byte[] bytes)
@@ -99,16 +103,22 @@ namespace _Project.Scripts.NetworkLayer.Transport
                 if (head.DeliverAtMs > nowMs)
                     return;
 
+                if (_matchConfig.dropChance > 0f && _random.NextDouble() < _matchConfig.dropChance)
+                {
+                    head.DeliverAtMs = nowMs + _matchConfig.retransmitMs;
+                    return;
+                }
+
                 queue.Dequeue();
                 deliver(head.Bytes);
             }
         }
 
-        private readonly struct Queued
+        private class Queued
         {
             public byte[] Bytes { get; }
-            public long DeliverAtMs { get; }
-            
+            public long DeliverAtMs { get; set; }
+
 
             public Queued(byte[] bytes, long deliverAtMs)
             {

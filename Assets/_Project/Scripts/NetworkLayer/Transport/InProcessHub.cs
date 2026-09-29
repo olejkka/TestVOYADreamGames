@@ -20,8 +20,8 @@ namespace _Project.Scripts.NetworkLayer.Transport
             int latency = matchConfig.defaultLatencyMs;
             
             _connections = new Connection[2];
-            _connections[0] = new Connection(this, 0, latency);
-            _connections[1] = new Connection(this, 1, latency);
+            _connections[0] = new Connection(this, 0, latency, matchConfig);
+            _connections[1] = new Connection(this, 1, latency, matchConfig);
         }
 
         public IClientTransport Client(int connectionId)

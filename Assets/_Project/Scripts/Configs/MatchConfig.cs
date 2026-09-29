@@ -15,6 +15,7 @@ namespace _Project.Scripts.Configs
 
         [Header("Network")]
         public int defaultLatencyMs;
+        [Range(0f, 1f)]
         public float dropChance;
         public int retransmitMs;
         public int turnTimeoutSec;
