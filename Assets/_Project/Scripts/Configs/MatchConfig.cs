@@ -19,6 +19,7 @@ namespace _Project.Scripts.Configs
         public float dropChance;
         public int retransmitMs;
         public int turnTimeoutSec;
+        public int timeOut;
         public bool logEnabled;
     }
 

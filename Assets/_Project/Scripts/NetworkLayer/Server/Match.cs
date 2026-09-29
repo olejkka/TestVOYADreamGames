@@ -15,10 +15,12 @@ namespace _Project.Scripts.NetworkLayer.Server
 
         private readonly Random _random = new Random();
         private readonly int _turnTimeoutSec;
+        private readonly int _timeOut;
 
         private Field[] _fields;
         private Ship[][] _ships;
         private List<ShotRecord>[] _shots;
+        private readonly long[] _absentSince = { SnapshotMessage.NoDeadline, SnapshotMessage.NoDeadline };
         private int _turn;
         private int _winner = SnapshotMessage.NoWinner;
         private long _turnDeadlineMs = SnapshotMessage.NoDeadline;
@@ -30,6 +32,7 @@ namespace _Project.Scripts.NetworkLayer.Server
             _fieldGenerator = fieldGenerator;
             _positionGenerator = positionGenerator;
             _turnTimeoutSec = matchConfig.turnTimeoutSec;
+            _timeOut = matchConfig.timeOut;
         }
 
         public void Place()
@@ -110,6 +113,51 @@ namespace _Project.Scripts.NetworkLayer.Server
             StartTurn(nowMs);
             
             return true;
+        }
+
+        public void MarkAbsent(int playerId, long nowMs)
+        {
+            if (!_placed || _winner != SnapshotMessage.NoWinner || _timeOut == 0)
+                return;
+
+            if (_absentSince[playerId] >= 0)
+                return;
+
+            _absentSince[playerId] = nowMs;
+        }
+
+        public void MarkPresent(int playerId)
+        {
+            _absentSince[playerId] = SnapshotMessage.NoDeadline;
+        }
+
+        public bool ExpireAbsence(long nowMs)
+        {
+            if (!_placed || _winner != SnapshotMessage.NoWinner || _timeOut == 0)
+                return false;
+
+            long limit = _timeOut * 1000L;
+
+            for (int playerId = 0; playerId < _absentSince.Length; playerId++)
+            {
+                if (_absentSince[playerId] < 0)
+                    continue;
+
+                if (nowMs - _absentSince[playerId] < limit)
+                    continue;
+
+                int other = 1 - playerId;
+                
+                if (_absentSince[other] >= 0)
+                    continue;
+
+                _winner = other;
+                StartTurn(nowMs);
+                
+                return true;
+            }
+
+            return false;
         }
 
         public SnapshotMessage SnapshotFor(int playerId)

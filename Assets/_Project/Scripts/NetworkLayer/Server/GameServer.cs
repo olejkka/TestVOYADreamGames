@@ -19,15 +19,16 @@ namespace _Project.Scripts.NetworkLayer.Server
             _match = match;
             
             _transport.Received += OnReceived;
+            _transport.Disconnected += OnDisconnected;
         }
 
         public void Tick(long nowMs)
         {
-            if (!_match.ExpireTurn(nowMs))
-                return;
-
-            SendSnapshot(0);
-            SendSnapshot(1);
+            if (_match.ExpireAbsence(nowMs) || _match.ExpireTurn(nowMs))
+            {
+                SendSnapshot(0);
+                SendSnapshot(1);
+            }
         }
 
         private void OnReceived(int connectionId, byte[] bytes)
@@ -53,8 +54,14 @@ namespace _Project.Scripts.NetworkLayer.Server
             SendSnapshot(1);
         }
 
+        private void OnDisconnected(int connectionId)
+        {
+            _match.MarkAbsent(connectionId, _hub.NowMs);
+        }
+
         private void OnHello(int connectionId)
         {
+            _match.MarkPresent(connectionId);
             bool wasReady = _seated[0] && _seated[1];
             _seated[connectionId] = true;
 
