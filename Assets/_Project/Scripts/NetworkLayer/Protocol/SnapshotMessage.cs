@@ -1,4 +1,5 @@
 using System;
+using _Project.Scripts;
 using _Project.Scripts.Ships;
 
 namespace _Project.Scripts.NetworkLayer.Protocol
@@ -8,6 +9,14 @@ namespace _Project.Scripts.NetworkLayer.Protocol
     {
         public ShipType type;
         public int[] cells;
+        public int[] hits;
+    }
+
+    [Serializable]
+    public class ShotPlacement
+    {
+        public int cell;
+        public ShotResult result;
     }
 
     [Serializable]
@@ -15,6 +24,8 @@ namespace _Project.Scripts.NetworkLayer.Protocol
     {
         public int width;
         public int height;
+        public int turn;
         public ShipPlacement[] ships;
+        public ShotPlacement[] shots;
     }
 }

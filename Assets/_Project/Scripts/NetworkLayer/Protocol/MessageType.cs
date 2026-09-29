@@ -5,6 +5,7 @@ namespace _Project.Scripts.NetworkLayer.Protocol
         None = 0,
         
         Hello = 1,
-        Snapshot = 2
+        Snapshot = 2,
+        Shoot = 3
     }
 }

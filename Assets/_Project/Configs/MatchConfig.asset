@@ -21,7 +21,7 @@ MonoBehaviour:
     Count: 2
   - Type: 3
     Count: 1
-  defaultLatencyMs: 500
+  defaultLatencyMs: 10
   dropChance: 0
   retransmitMs: 1000
   turnTimeoutSec: 0
