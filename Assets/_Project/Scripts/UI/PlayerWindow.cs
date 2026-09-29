@@ -12,9 +12,11 @@ namespace _Project.Scripts.UI
     {
         [SerializeField] private GridLayoutGroup alliesGrid;
         [SerializeField] private GridLayoutGroup enemyGrid;
+        [SerializeField] private GameResultView resultView;
 
         private ClientSession _session;
         private CellInstantiator _cells;
+        private GameResultPresenter _result;
         private CellPresenter[] _allies;
         private CellPresenter[] _enemy;
         private bool _built;
@@ -24,6 +26,7 @@ namespace _Project.Scripts.UI
         {
             _session = session;
             _cells = cells;
+            _result = new GameResultPresenter(resultView, session);
             _session.SnapshotReceived += OnSnapshot;
             if (_session.Snapshot != null)
                 OnSnapshot(_session.Snapshot);

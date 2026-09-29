@@ -10,6 +10,7 @@ namespace _Project.Scripts.NetworkLayer.Client
         private readonly int _playerId;
         private bool _waiting;
 
+        public int PlayerId => _playerId;
         public SnapshotMessage Snapshot { get; private set; }
         public event Action<SnapshotMessage> SnapshotReceived;
         public event Action OutOfTurn;
@@ -30,6 +31,9 @@ namespace _Project.Scripts.NetworkLayer.Client
 
         public void Shoot(int cell)
         {
+            if (Snapshot.winner != SnapshotMessage.NoWinner)
+                return;
+
             if (Snapshot.turn != _playerId)
             {
                 OutOfTurn?.Invoke();

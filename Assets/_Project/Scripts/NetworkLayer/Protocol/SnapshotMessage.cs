@@ -25,8 +25,11 @@ namespace _Project.Scripts.NetworkLayer.Protocol
         public int width;
         public int height;
         public int turn;
+        public int winner;
         public ShipPlacement[] ships;
         public ShotPlacement[] shots;
         public int[] misses;
+
+        public const int NoWinner = -1;
     }
 }

@@ -18,6 +18,7 @@ namespace _Project.Scripts.NetworkLayer.Server
         private Ship[][] _ships;
         private List<ShotRecord>[] _shots;
         private int _turn;
+        private int _winner = SnapshotMessage.NoWinner;
         private bool _placed;
 
 
@@ -46,12 +47,13 @@ namespace _Project.Scripts.NetworkLayer.Server
             }
 
             _turn = 0;
+            _winner = SnapshotMessage.NoWinner;
             _placed = true;
         }
 
         public bool TryShoot(int shooter, int cell)
         {
-            if (!_placed || shooter != _turn)
+            if (!_placed || _winner != SnapshotMessage.NoWinner || shooter != _turn)
                 return false;
 
             int size = _fields[shooter].Width * _fields[shooter].Height;
@@ -76,7 +78,10 @@ namespace _Project.Scripts.NetworkLayer.Server
             if (result == ShotResult.Sunk)
                 MarkSunk(shooter, ship);
 
-            _turn = 1 - shooter;
+            if (AllSunk(_ships[1 - shooter]))
+                _winner = shooter;
+            else
+                _turn = 1 - shooter;
             
             return true;
         }
@@ -113,6 +118,7 @@ namespace _Project.Scripts.NetworkLayer.Server
                 width = _fields[playerId].Width,
                 height = _fields[playerId].Height,
                 turn = _turn,
+                winner = _winner,
                 ships = placements,
                 shots = shots,
                 misses = MissesOn(playerId)
@@ -172,6 +178,17 @@ namespace _Project.Scripts.NetworkLayer.Server
             }
 
             return false;
+        }
+
+        private static bool AllSunk(Ship[] ships)
+        {
+            for (int i = 0; i < ships.Length; i++)
+            {
+                if (!ships[i].IsSunk)
+                    return false;
+            }
+
+            return true;
         }
 
         private void MarkSunk(int shooter, Ship ship)
