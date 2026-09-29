@@ -14,8 +14,42 @@ namespace _Project.Scripts.NetworkLayer.Client
         private bool _waiting;
         private bool _connected;
 
+        public int RetransmitMs
+        {
+            get => _transport.RetransmitMs;
+            set => _transport.RetransmitMs = value < 0 ? 0 : value;
+        }
+
+        public void SetNetwork(int latencyMs, float dropChance, int retransmitMs)
+        {
+            Latency = latencyMs;
+            DropChance = dropChance;
+            RetransmitMs = retransmitMs;
+        }
+
+        public int Latency
+        {
+            get => _transport.Latency;
+            set => _transport.Latency = value < 0 ? 0 : value;
+        }
+
+        public float DropChance
+        {
+            get => _transport.DropChance;
+            set
+            {
+                if (value < 0f)
+                    value = 0f;
+                
+                if (value > 1f)
+                    value = 1f;
+
+                _transport.DropChance = value;
+            }
+        }
         public int PlayerId => _playerId;
         public SnapshotMessage Snapshot { get; private set; }
+        
         public event Action<SnapshotMessage> SnapshotReceived;
         public event Action OutOfTurn;
         public event Action Disconnected;
@@ -26,6 +60,7 @@ namespace _Project.Scripts.NetworkLayer.Client
             _transport = transport;
             _playerId = playerId;
             _matchConfig = matchConfig;
+            
             _transport.Received += OnReceived;
             _transport.Disconnected += OnDisconnected;
         }
@@ -39,7 +74,9 @@ namespace _Project.Scripts.NetworkLayer.Client
         {
             _transport.Connect();
             _connected = true;
+            
             _transport.Send(MessageCodec.EncodeHello());
+            
             Log("sent Hello");
         }
 
@@ -67,7 +104,9 @@ namespace _Project.Scripts.NetworkLayer.Client
                 return false;
 
             _waiting = true;
+            
             _transport.Send(MessageCodec.EncodeShoot(cell));
+            
             Log("sent Shoot " + cell);
             
             return true;
@@ -79,7 +118,9 @@ namespace _Project.Scripts.NetworkLayer.Client
                 return;
 
             Snapshot = MessageCodec.ReadSnapshot(bytes);
+            
             _waiting = false;
+            
             Log("received Snapshot turn " + Snapshot.turn + " winner " + Snapshot.winner);
             
             SnapshotReceived?.Invoke(Snapshot);
@@ -89,6 +130,7 @@ namespace _Project.Scripts.NetworkLayer.Client
         {
             _connected = false;
             _waiting = false;
+            
             Disconnected?.Invoke();
         }
 

@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace _Project.Scripts.UI.NetworkButtons
+namespace _Project.Scripts.UI.NetworkSettings
 {
     public class DisconnectView : MonoBehaviour
     {

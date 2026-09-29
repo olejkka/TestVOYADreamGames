@@ -1,6 +1,6 @@
 using _Project.Scripts.NetworkLayer.Client;
 
-namespace _Project.Scripts.UI.NetworkButtons
+namespace _Project.Scripts.UI.NetworkSettings
 {
     public class DisconnectPresenter
     {

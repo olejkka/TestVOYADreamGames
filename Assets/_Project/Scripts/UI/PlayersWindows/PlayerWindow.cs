@@ -3,7 +3,7 @@ using _Project.Scripts.NetworkLayer.Client;
 using _Project.Scripts.NetworkLayer.Protocol;
 using _Project.Scripts.UI.Cell;
 using _Project.Scripts.UI.GameResult;
-using _Project.Scripts.UI.NetworkButtons;
+using _Project.Scripts.UI.NetworkSettings;
 using _Project.Scripts.UI.TurnTimer;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,6 +18,7 @@ namespace _Project.Scripts.UI.PlayersWindows
         [SerializeField] private DisconnectView disconnectView;
         [SerializeField] private ConnectView connectView;
         [SerializeField] private TurnTimerView turnTimerView;
+        [SerializeField] private NetworkSettingsView networkSettingsView;
 
         private ClientSession _session;
         private CellInstantiator _cells;
@@ -25,6 +26,7 @@ namespace _Project.Scripts.UI.PlayersWindows
         private DisconnectPresenter _disconnect;
         private ConnectPresenter _connect;
         private TurnTimerPresenter _turnTimer;
+        private NetworkSettingsPresenter _networkSettings;
         private CellPresenter[] _allies;
         private CellPresenter[] _enemy;
         private bool _built;
@@ -38,6 +40,7 @@ namespace _Project.Scripts.UI.PlayersWindows
             _disconnect = new DisconnectPresenter(disconnectView, session);
             _connect = new ConnectPresenter(connectView, session);
             _turnTimer = new TurnTimerPresenter(turnTimerView, session);
+            _networkSettings = new NetworkSettingsPresenter(networkSettingsView, session);
             _session.SnapshotReceived += OnSnapshot;
             if (_session.Snapshot != null)
                 OnSnapshot(_session.Snapshot);

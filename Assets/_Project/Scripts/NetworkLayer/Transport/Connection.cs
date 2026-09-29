@@ -7,7 +7,6 @@ namespace _Project.Scripts.NetworkLayer.Transport
     public class Connection : IClientTransport
     {
         private readonly InProcessHub _hub;
-        private readonly MatchConfig _matchConfig;
         private readonly int _id;
         private readonly Random _random = new Random();
         
@@ -17,6 +16,8 @@ namespace _Project.Scripts.NetworkLayer.Transport
         private bool _connected;
 
         public int Latency { get; set; }
+        public float DropChance { get; set; }
+        public int RetransmitMs { get; set; }
 
         public event Action<byte[]> Received;
         public event Action Disconnected;
@@ -27,7 +28,8 @@ namespace _Project.Scripts.NetworkLayer.Transport
             _hub = hub;
             _id = id;
             Latency = latency;
-            _matchConfig = matchConfig;
+            DropChance = matchConfig.dropChance;
+            RetransmitMs = matchConfig.retransmitMs;
         }
 
         public void Send(byte[] bytes)
@@ -103,9 +105,9 @@ namespace _Project.Scripts.NetworkLayer.Transport
                 if (head.DeliverAtMs > nowMs)
                     return;
 
-                if (_matchConfig.dropChance > 0f && _random.NextDouble() < _matchConfig.dropChance)
+                if (DropChance > 0f && _random.NextDouble() < DropChance)
                 {
-                    head.DeliverAtMs = nowMs + _matchConfig.retransmitMs;
+                    head.DeliverAtMs = nowMs + RetransmitMs;
                     return;
                 }
 
